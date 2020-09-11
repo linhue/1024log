@@ -1,0 +1,387 @@
+
+  <!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8"> 
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="/static\bootstrap-3.3.7-dist\css\bootstrap.css" /> 
+    <link rel="stylesheet" type="text/css" href="/static\bootstrap-3.3.7-dist\css\bootstrap.min.css" /> 
+      <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">  
+      <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+      .tree {
+      min-height:20px;
+      padding:19px;
+      margin-bottom:20px;
+      background-color:#fbfbfb;
+      border:1px solid #999;
+      -webkit-border-radius:4px;
+      -moz-border-radius:4px;
+      border-radius:4px;
+      -webkit-box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.05);
+      -moz-box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.05);
+      box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.05)
+  }
+  .tree li {
+      list-style-type:none;
+      margin:0;
+      padding:10px 5px 0 5px;
+      position:relative
+  }
+  .tree li::before, .tree li::after {
+      content:'';
+      left:-20px;
+      position:absolute;
+      right:auto
+  }
+  .tree li::before {
+      border-left:1px solid #999;
+      bottom:50px;
+      height:100%;
+      top:0;
+      width:1px
+  }
+  .tree li::after {
+      border-top:1px solid #999;
+      height:20px;
+      top:25px;
+      width:25px
+  }
+  
+  .tree li span {
+      -moz-border-radius:5px;
+      -webkit-border-radius:5px;
+      border:1px solid #999;
+      border-radius:5px;
+      display:inline-block;
+      padding:3px 8px;
+      text-decoration:none
+  }
+  .tree li.parent_li>span {
+      cursor:pointer
+  }
+  .tree>ul>li::before, .tree>ul>li::after {
+      border:0
+  }
+  .tree li:last-child::before {
+      height:30px
+  }
+  .tree li.parent_li>span:hover, .tree li.parent_li>span:hover+ul li span {
+      background:#eee;
+      border:1px solid #94a0b4;
+      color:#000
+  }
+  
+  .icon-plus-sign{display:inline-block;width:16px;height:16px;background:url('../Images/bg/ico_small.png') left -44px no-repeat;}
+  .icon-minus-sign{display:inline-block;width:16px;height:16px;background:url('../Images/bg/ico_small.png') left 0px no-repeat;}
+  .tree li::before, .tree li::after {}
+  .tree li::before {}
+  .tree li::after {}
+    </style>  
+  </head>
+  <body style="font-size: 15">
+  
+    <div class="tree well" style="width: 12%;height:100%;display: inline-block;float: left;">
+  
+      <ul>
+          {volist name='arr' id = 'v' }
+          <li>
+              <?php $year = $key;?>
+              {if condition="is_array($v)"}
+                  <span><i class="icon-plus-sign"></i> dirname::{$key}</span> 
+                  <ul>
+                      {volist name='v' id = 'vs'}
+                          <li>
+                              {if condition="is_array($vs)"}
+                                  <ul>
+                                      <li>
+                                          <span><i class="icon-leaf"></i> {$vs}</span> <a href="">Goes somewhere</a>
+                                          <!-- <ul>
+                                          <li>
+                                              <span><i class="icon-leaf"></i> Child</span> <a href="">Goes somewhere</a>
+                                          </li>
+                                          </ul> -->
+                                      </li>
+                                  </ul>
+  
+                              {else}
+                                  <a href="/log/log/Index?year={$year}&month={$vs}">
+                                      <span><i class="icon-plus-sign"></i> {$vs}</span>
+                                  </a>
+                              {/if}
+                          </li>
+                      {/volist}
+                  </ul>
+  
+  
+              {else}
+             
+              {/if}
+          </li>
+          {/volist}
+      </ul>
+  </div>
+    
+  <div style="width: 88%;display: inline-block;float: left;">
+    <table class="table" style="width: 95%;margin:0 auto;">
+   
+       <thead>
+          <tr>
+            <th>发送模拟请求</th>
+             {volist name='show_' id='v'}
+              <th>{$v}</th>
+             {/volist}
+          </tr>
+       </thead>
+       <tbody>
+        <?php foreach($data['infos'] as $key=>$val){ ?>
+          <tr>
+            <td>
+              <button class="btn btn-primary btn-lg" 
+                  {if condition="isset($val['request_type'])" } 
+                      data-uri="{$val['request_uri']}" 
+    
+                  {else}
+                      data-uri="" 
+                  {/if} 
+                  {if condition="isset($val['request_type'])" } 
+                      data-request_type="{$val['request_type']}" 
+                  {else}
+                      data-request_type="" 
+                  {/if} 
+                  {if condition="isset($val['PARAM'])" } 
+                   data-param='<?php  echo $this_->str_($val['PARAM'])?>'
+                  {else}
+                      data-param="" 
+                  {/if} 
+    
+                   
+                  data-toggle="modal" 
+                  data-target="#myModal" >
+                send
+              </button>  
+            </td>
+            <?php foreach($show_ as $key=>$va){ ?>
+                <td  
+                 {if condition="!empty($this_->getFileStr($key,$val)) && $key == 'ERROR'"}   class="danger" {else/} class="active"{/if}>
+                 <?php echo $this_->getFileStr($key,$val);?>
+                </td>
+            <?php } ?>
+          </tr>
+    
+        <?php }?>
+       </tbody>
+    </table>
+    <nav aria-label="Page navigation" >
+      <div style="display: inline-block;margin-left:5%;">
+        <ul class="pagination" >
+          <!-- <li>
+            <a href="#" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li> -->
+          {for start="1" end="($data['page_num']+1)"}
+          <li><a href="/log/log/index?page={$i}&year={$year_}&month={$month_}">{$i}</a></li>
+          {/for}
+          <!-- <li>
+            <a href="#" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li> -->
+        </ul>
+    </div>
+    </nav>
+  </div>
+  
+  
+  
+  
+  <div class="container-fluid text-center">
+    <!-- 按钮触发模态框 -->
+  
+  
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+      <div class="modal-dialog">
+        <div class="modal-content" style="width: 150%;">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                ×
+          </button>
+            <h4 class="modal-title" id="myModalLabel">
+              模拟请求
+          </h4>
+          </div>
+          <div class="modal-body">
+            
+            <label for="name">url</label>
+            <div class="col-sm-10" style="display: inline-block;float: left;width: 150px;">
+              <select class="form-control" id="http_" style="width: 109px;height: 40px;" >
+                <option value='http://' selected>http</option><option value='https://' >https</option>
+              </select>
+            </div>
+            <div class="col-sm-10" style="display: inline-block;float: left;width: 150px;">
+               
+  
+              <input type="text" class="form-control" id="http"  placeholder="域名"  value="{$server_name}">
+            </div>
+            <div class="col-sm-10"  style="display: inline-block;float: left;width: 200px;">
+              <input type="text" class="form-control" id="request_uri" placeholder="请求连接" disabled value="">
+            </div>
+  
+          </div>
+          <div class="modal-footer">
+            <div class="col-sm-10" >
+                <select class="form-control" id="sel1" style="width: 80%;height: 40px;">
+  
+                </select>       
+            </div>
+  
+          </div>
+          <!-- header头参数 -->
+          <div class="modal-footer">
+              <div class='col-sm-10' style='display: inline-block;float: left;width: 100%;'><label for="name">header</label></div>
+              <div class='col-sm-10' style='display: inline-block;float: left;width: 50%;'><input type='text' class='form-control' name='header[]'  placeholder='请设置header参数key'  value=''></div>
+              <div class='col-sm-10' style='display: inline-block;float: left;width: 50%;'><input type='text' class='form-control' name='header[]'  placeholder='val'  value=''></div>
+              <div class='col-sm-10' style='display: inline-block;float: left;width: 50%;'><input type='text' class='form-control' name='header[]'  placeholder='请设置headerkey'  value=''></div>
+              <div class='col-sm-10' style='display: inline-block;float: left;width: 50%;'><input type='text' class='form-control' name='header[]'  placeholder='val'  value=''></div>   
+  
+          </div>
+          <!-- header头参数 -->
+  
+          <div class="modal-footer" id="cs">
+              
+            <!-- <div class="col-sm-10" style="display: inline-block;float: left;width: 150px;">
+              <input type="text" class="form-control" name="cs"  placeholder="域名"  value="{$server_name}">
+            </div> -->
+          </div>
+  
+          <div class="modal-footer">
+            
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+          </button>
+            <button type="button" class="btn btn-primary send_request" data-request_type = 'GET'>
+             发送请求
+          </button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+  
+      <div class="modal-dialog">
+        <div class="modal-content"  style="width: 150%;">
+          <div class="modal-header">
+            <textarea class="form-control" id="deblock_udid" name="deblock_udid" rows="16" style="min-width: 90%" disabled>
+              {
+                "status": 1,
+                "code": "200",
+                "code_info": "OK",
+                "time": "2020-09-10 18:07:34",
+                "data": "弃单成功"
+              }
+            </textarea>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>    
+      <!-- /.modal -->
+    </div>
+  </body>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <!-- ajax 请求 -->
+  <script>
+    $('.send_request').click(function (){
+      var request_type =$(this).data('request_type')
+      var url = $('#http_').val()+$('#http').val()+$('#request_uri').val()
+      //分割url 
+      if(request_type != 'GET')
+      {
+        var inputs=	document.getElementsByName("cs");//通常获取的是表单标签name
+       
+        var obj1 = {};
+              for (var i = 0; i < inputs.length; i++) {
+          if(i%2==0) {
+            obj1[inputs[i].value] = '';
+          }else{
+            obj1[inputs[i-1].value] = inputs[i].value;
+          }
+        }
+      }
+      const instance =axios.create();
+       instance({
+          method: request_type,
+          headers: {'X-Requested-With': 'XMLHttpRequest'},
+          url:url,
+          param:obj1
+      }). then(function (response){
+        document.getElementById('deblock_udid').value= JSON.stringify(response.data, null, "\t")
+      }).catch(function (response){
+        document.getElementById('deblock_udid').value= JSON.stringify(response, null, "\t")
+      });
+    })
+  
+  </script>
+  <script >
+    $('.btn-lg').click(function (){
+        $('#request_uri').val( $(this).data('uri') )
+        request_type =$(this).data('request_type')
+  
+        //赋值为发送按钮
+        $('.send_request').data('request_type',request_type);
+        //请求参数
+        param = $(this).data('param')
+      if(request_type == 'GET')
+      {
+        $('#sel1').html("<option value='GET'>GET</option><option value='GET' selected>GET</option><option value='PUT'>PUT</option><option value='POST'>POST</option><option value='DELETE'>DELETE</option>")
+      }
+      if(request_type == 'PUT')
+      {
+        $('#sel1').html("<option value='GET'>GET</option><option value='GET' >GET</option><option selected value='PUT'>PUT</option><option value='POST'>POST</option><option value='DELETE'>DELETE</option>")
+      }    
+      if(request_type == 'POST')
+      {
+        $('#sel1').html("<option value='GET'>GET</option><option value='GET' >GET</option><option  value='PUT'>PUT</option><option selected value='POST'>POST</option><option value='DELETE'>DELETE</option>")
+      }  
+      if(request_type == 'DELETE')
+      {
+        $('#sel1').html("<option value='GET'>GET</option><option value='GET' >GET</option><option  value='PUT'>PUT</option><option  value='POST'>POST</option><option value='DELETE' selected>DELETE</option>")
+      }  
+  
+      cs_str = "";
+  
+      for(var v in param)
+      {
+        if(v == 0)
+        {
+          continue;
+        }
+        cs_str += "<div class='col-sm-10' style='display: inline-block;float: left;width: 50%;'><input type='text' class='form-control' name='cs'  placeholder='"+param[v].key+"'  value='"+param[v].key+"'></div><div class='col-sm-10' style='display: inline-block;float: left;width: 50%;'><input type='text' class='form-control' name='cs'  placeholder='"+param[v].val+"'  value='"+param[v].val+"'></div>"
+      }
+   
+      $('#cs').html(cs_str)
+        $('#myModal').show()
+    })
+  </script>
+  <script type="text/javascript">
+    var d=true;
+    $(function () {
+        $('.tree li:has(ul)').addClass('parent_li').find(' > span').attr('title', 'Collapse this branch');
+        $('.tree li.parent_li > span').on('click', function (e) {
+            var d = $(this).siblings('ul').is(":visible");
+            $(this).siblings('ul').slideToggle('fast');//.siblings('dt').css('background-position','right -40px');
+            if (d) {
+                console.log($(this).find(">i"));
+                $(this).find(">i").addClass('icon-minus-sign').removeClass('icon-plus-sign');
+                
+            } else {
+              //  $(this).find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
+                $(this).find(">i").addClass('icon-plus-sign').removeClass('icon-minus-sign');
+            }
+            e.stopPropagation();
+        });
+    });
+  
+  </script>
+  </html>
+  
