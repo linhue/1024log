@@ -106,7 +106,7 @@
                                   </ul>
   
                               {else}
-                                  <a href="/log/log/Index?year={$year}&month={$vs}">
+                                  <a href="{$config['uri']}?year={$year}&month={$vs}">
                                       <span><i class="icon-plus-sign"></i> {$vs}</span>
                                   </a>
                               {/if}
@@ -182,7 +182,7 @@
             </a>
           </li> -->
           {for start="1" end="($data['page_num']+1)"}
-          <li><a href="/log/log/index?page={$i}&year={$year_}&month={$month_}">{$i}</a></li>
+          <li><a href="{$config['uri']}?page={$i}&year={$year_}&month={$month_}">{$i}</a></li>
           {/for}
           <!-- <li>
             <a href="#" aria-label="Next">

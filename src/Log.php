@@ -9,7 +9,7 @@ class Log  extends Controller
     private $dataDirPath = '/runtime/data/';
     private $show_ = ['request_uri'=>'请求路由','request_type'=>'请求方式','created_at'=>'请求时间', 'request_ip'=>'访问ip', 'system_run_info'=>'运行状况', 'PARAM'=>'请求参数', 'DB'=>"数据库访问", 'SQ'=>'sql信息','ROUTE'=>'路由详情','RUN'=>'运行文件','ERROR'=>'错误信息'];
 
-    public function index()
+    public function index($config = ['uri'=>'/index/index/index'])
     {
         $this->root_path = trim($_SERVER['DOCUMENT_ROOT'],'/public');
         //检查data是否存在
@@ -32,6 +32,7 @@ class Log  extends Controller
         $this->assign('year_',$param['year']);
         $this->assign('month_',$param['month']);
         $this->assign('arr', $arr);
+        $this->assign('config', $config);
         return $this->fetch($this->root_path."/vendor/1024log/logserver/src/view/index.html");
     }
     private function mkdirs($dir, $mode = 0777)
