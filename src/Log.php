@@ -5,24 +5,22 @@ use think\Controller;
 class Log  extends Controller
 {
 
-    private $dirPath = '../runtime/log/';
-    private $dataDirPath = '../runtime/data/';
+    private $dirPath = '/runtime/log/';
+    private $dataDirPath = '/runtime/data/';
     private $show_ = ['request_uri'=>'请求路由','request_type'=>'请求方式','created_at'=>'请求时间', 'request_ip'=>'访问ip', 'system_run_info'=>'运行状况', 'PARAM'=>'请求参数', 'DB'=>"数据库访问", 'SQ'=>'sql信息','ROUTE'=>'路由详情','RUN'=>'运行文件','ERROR'=>'错误信息'];
-    // public function getDirThree()
-    // {
 
-    //     return $this->fetch('three');
-    // }
     public function index()
     {
-
+        $this->root_path = trim($_SERVER['DOCUMENT_ROOT'],'/public');
+        //检查data是否存在
+        $this->mkdirs($this->root_path.$this->dataDirPath);
+        
         $this->assign('server_name',$_SERVER['SERVER_NAME']?:'');
         //组合uri
         $param  =  request()->param();
         $param['year'] = isset($param['year'])?$param['year']:date('Ym');
         $param['month'] = isset($param['month'])?$param['month']:date('d').'.log';
         $uri = $param['year'].'/'.$param['month'];
-
         //右侧显示
         $this->assign('data', $data =$this->get_sys_data($uri));
         $this->assign('show_',$this->show_);
@@ -30,11 +28,17 @@ class Log  extends Controller
 
         //左侧显示 栏目
         $dirPath = !isset($_SESSION['dirPath'])?$this->dirPath:$_SESSION['dirPath'];
-        $arr = DirService::each_dir($dirPath);
+        $arr = DirService::each_dir($this->root_path.$dirPath);
         $this->assign('year_',$param['year']);
         $this->assign('month_',$param['month']);
         $this->assign('arr', $arr);
-        return $this->fetch(ROOT_PATH."/vendor/1024log/logserver/src/view/index.html");
+        return $this->fetch($this->root_path."/vendor/1024log/logserver/src/view/index.html");
+    }
+    private function mkdirs($dir, $mode = 0777)
+    {
+        if (is_dir($dir) || @mkdir($dir, $mode)) return TRUE;
+        if (!mkdirs(dirname($dir), $mode)) return FALSE;
+        return @mkdir($dir, $mode);
     }
     //处理请求参数
     public function str_($arr)
@@ -61,7 +65,7 @@ class Log  extends Controller
         $limit = (isset($param['limit']) && !empty($param['limit']) )?$param['limit']:10;
         $res = '';
 
-        if(!file_exists($this->dirPath.$uri))
+        if(!file_exists($this->root_path.$this->dirPath.$uri))
         {
             return [
                 'page'=>1,
@@ -74,7 +78,7 @@ class Log  extends Controller
 
         if(!file_exists($this->dataDirPath.(md5($uri).'.php')))
         {
-           $res =  $this->make_three_file($this->dirPath.$uri, (md5($uri)));
+           $res =  $this->make_three_file($this->root_path.$this->dirPath.$uri, (md5($uri)));
         }
         
 
@@ -91,7 +95,7 @@ class Log  extends Controller
             $length = 0;
         }
         //查询文件是否存在
-        $data = DirService::get_file_array($this->dataDirPath.(md5($uri)).'.php');
+        $data = DirService::get_file_array($this->root_path.$this->dataDirPath.(md5($uri)).'.php');
         $temp_data = [];
         foreach($data as $key=>$v)
         {
@@ -268,7 +272,7 @@ class Log  extends Controller
             @$data[$time_key]['key_word'][] = 'test_data';
             //存储日月年的 key word
         }
-        DirService::arr_insert_file($this->dataDirPath.$temp_.'.php',$data);
+        DirService::arr_insert_file($this->root_path.$this->dataDirPath.$temp_.'.php',$data);
         return true;
     }
     /**
